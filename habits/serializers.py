@@ -6,7 +6,7 @@ from .validators import validate_duration, validate_regularity, AssociatedHabitV
 class HabitSerializer(serializers.ModelSerializer):
     regularity = serializers.IntegerField(validators=[validate_regularity], required=False)
     duration = serializers.DurationField(validators=[validate_duration], required=False)
-    associated_habit = serializers.PrimaryKeyRelatedField(queryset=Habit.objects.all(), allow_empty=True, required=False)
+    associated_habit = serializers.PrimaryKeyRelatedField(queryset=Habit.objects.all(), required=False)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     validators = [AssociatedHabitValidator('is_pleasurable', 'associated_habit', 'reward')]
@@ -17,6 +17,17 @@ class HabitSerializer(serializers.ModelSerializer):
                 "Для полезной привычки обязательны для заполнения поля 'regularity' и 'duration'.")
         return data
 
+    def validate_required_field(self, value):
+        if self.context['request'].method == 'POST' and not value:
+            raise serializers.ValidationError("This field is required.")
+        return value
+
+    class Meta:
+        model = Habit
+        fields = '__all__'
+
+
+class PublicHabitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habit
         fields = '__all__'
