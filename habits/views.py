@@ -4,6 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from users.permissions import IsOwner
 from .models import Habit
 from .serializers import HabitSerializer, PublicHabitSerializer
+from .tasks import create_plan
 
 
 class HabitViewSet(ModelViewSet):
@@ -11,7 +12,9 @@ class HabitViewSet(ModelViewSet):
     serializer_class = HabitSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        habit = serializer.save(user=self.request.user)
+        if not habit.is_pleasurable:
+            create_plan.delay(habit.pk)
 
     def get_queryset(self):
         if self.action == 'list':
