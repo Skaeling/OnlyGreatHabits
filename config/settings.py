@@ -179,9 +179,5 @@ CELERY_TASK_TRACK_STARTED = True
 # Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
-# CELERY_BEAT_SCHEDULE = {
-#     'create_routine_plan': {
-#         'task': 'users.tasks.create_plan',  # Путь к задаче
-#         'schedule': timedelta(minutes=2),  # Расписание выполнения задачи
-#     },
-# }
+TG_URL = 'https://api.telegram.org/bot'
+TG_KEY = os.getenv('TG_KEY')
