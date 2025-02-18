@@ -34,8 +34,9 @@ def create_or_update_plan(pk):
 @shared_task(name='habit.tasks.send_tg_notification')
 def send_tg_notification(pk):
     habit = Habit.objects.get(pk=pk)
+    place = " в " + habit.place if habit.place else ''
     message = f'<b>Напоминание о привычке<tg-emoji emoji-id="5368324170671202286">❗</tg-emoji></b>' \
-              f'\n{habit.action.capitalize()} в {habit.place}, начать необходимо в {habit.start_time.strftime("%H:%M")}.'
+              f'\n{habit.action.capitalize()}{place}, начать необходимо в {habit.start_time.strftime("%H:%M")}.'
     if habit.reward:
         message += f'\n\n<b>Ваша награда за выполнение<tg-emoji emoji-id="5368324170671202286">⭐</tg-emoji></b> \n{habit.reward.capitalize()}'
     elif habit.associated_habit:

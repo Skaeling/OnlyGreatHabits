@@ -9,13 +9,13 @@ class HabitSerializer(serializers.ModelSerializer):
     associated_habit = serializers.PrimaryKeyRelatedField(queryset=Habit.objects.all(), required=False)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-    validators = [AssociatedHabitValidator('is_pleasurable', 'associated_habit', 'reward')]
+    validators = [AssociatedHabitValidator('is_pleasurable', 'associated_habit', 'reward', )]
 
-    def validate(self, data):
-        if data.get('is_pleasurable') is False and (data.get('regularity') is None or data.get('duration') is None):
-            raise serializers.ValidationError(
-                "Для полезной привычки обязательны для заполнения поля 'regularity' и 'duration'.")
-        return data
+    # def validate(self, data):
+    #     if data.get('is_pleasurable') in (False, None) and (data.get('regularity') is None or data.get('duration') is None):
+    #         raise serializers.ValidationError(
+    #             "Для полезной привычки обязательны для заполнения поля 'regularity' и 'duration'.")
+    #     return data
 
     def validate_required_field(self, value):
         if self.context['request'].method == 'POST' and not value:
