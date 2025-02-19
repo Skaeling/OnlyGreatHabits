@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
 
@@ -7,6 +9,8 @@ from .serializers import HabitSerializer, PublicHabitSerializer
 from .tasks import create_or_update_plan, delete_plan
 
 
+@method_decorator(name='list',
+                  decorator=swagger_auto_schema(operation_description="Возвращает список пользовательских привычек"))
 class HabitViewSet(ModelViewSet):
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
@@ -27,6 +31,7 @@ class HabitViewSet(ModelViewSet):
         return super().get_permissions()
 
     def perform_update(self, serializer):
+        """При обновлении полей 'start_time', 'regularity' запускает задачу на обновление расписания напоминаний"""
         initial_data = serializer.initial_data
         instance = serializer.save()
         if any(initial_data.get(field) != getattr(instance, field) for field in ('start_time', 'regularity')):
@@ -38,7 +43,8 @@ class HabitViewSet(ModelViewSet):
 
 
 class HabitPublicListAPIView(generics.ListAPIView):
+    """Возвращает список публичных привычек, кроме тех, что принадлежат текущему пользователю"""
     serializer_class = PublicHabitSerializer
 
     def get_queryset(self):
-        return Habit.objects.filter(is_public=True)
+        return Habit.objects.filter(is_public=True).exclude(user=self.request.user)
