@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -19,7 +20,6 @@ load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -32,7 +32,6 @@ DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,8 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
 
-    'rest_framework'
+    'rest_framework',
+    'users',
+    'habits',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'django_celery_beat',
+
 ]
 
 MIDDLEWARE = [
@@ -54,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -77,10 +85,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5
 }
+
+# Настройки срока действия токенов
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+# Настройки CORS
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -95,7 +121,6 @@ DATABASES = {
         'PORT': os.getenv('DATABASE_PORT', default='5432')
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -115,7 +140,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -127,7 +151,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -144,3 +167,32 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+CACHE_ENABLED = True
+if CACHE_ENABLED:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': os.getenv('LOCATION'),
+        }
+    }
+
+# Настройки для Celery
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = TIME_ZONE
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+TG_URL = 'https://api.telegram.org/bot'
+TG_KEY = os.getenv('TG_KEY')

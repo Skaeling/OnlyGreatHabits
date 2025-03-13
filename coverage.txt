@@ -1,0 +1,14 @@
+Name                    Stmts   Miss  Cover   Missing
+-----------------------------------------------------
+habits/models.py           19      1    95%   25
+habits/serializers.py      20      3    85%   15-17
+habits/services.py         22     16    27%   11-16, 21-36
+habits/tasks.py            31     20    35%   13-32, 39-60, 65
+habits/validators.py       23      7    70%   7-8, 12-13, 29, 33, 37
+users/models.py            12      1    92%   14
+users/permissions.py        8      1    88%   17
+users/services.py          11      2    82%   13-14
+-----------------------------------------------------
+TOTAL                     276     51    82%
+
+9 files skipped due to complete coverage.
