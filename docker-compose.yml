@@ -90,7 +90,7 @@ services:
   celery_beat:
     container_name: celery_beat
     build: .
-    restart: on-failure[:3]
+    restart: on-failure:3
     command: celery -A config beat --scheduler django -l info
     volumes:
       - .:/habits
