@@ -30,7 +30,19 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['158.160.90.42', 'django', 'localhost', '0.0.0.0']
+
+# Настройки CORS
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8000',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://158.160.90.42:8000"
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
 
 # Application definition
 
@@ -96,17 +108,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
-
-# Настройки CORS
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-]
-
-CORS_ALLOW_ALL_ORIGINS = False
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

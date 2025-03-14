@@ -18,6 +18,19 @@ services:
       redis:
         condition: service_healthy
 
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/nginx/staticfiles
+    depends_on:
+      - habits
+    networks:
+      - habits_network
+
   db_habits:
     container_name: db_habits
     image: postgres:15.10
