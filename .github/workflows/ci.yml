@@ -44,7 +44,7 @@ jobs:
       - name: Start Redis server
         run: |
           sudo service redis-server start
-          for i in {1..30}; do
+          for i in {1..10}; do
             if redis-cli ping; then
               echo "Redis is up!"
               exit 0
@@ -78,6 +78,10 @@ jobs:
 
       - name: Log in Docker hub
         run: echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - name: Create .env file
+        run: |
+          touch .env && echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: Build and push Docker images using Docker Compose
         run: |
