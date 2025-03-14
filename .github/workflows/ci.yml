@@ -92,7 +92,6 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          docker rmi ogh || true
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
           docker stop onlygreathabits || true
           docker rm onlygreathabits || true
