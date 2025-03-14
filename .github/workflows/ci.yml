@@ -47,18 +47,20 @@ jobs:
       - name: Wait for Redis
         run: |
           for i in {1..30}; do
-            if nc -z redis 6379; then
-              echo "Redis is up!"
-              exit 0
-            fi
-            echo "Waiting for Redis..."
-            sleep 1
+          if docker exec -i ${{ job.services.redis.name }} ping -c 1 redis; then
+           echo "Redis is up!"
+           exit 0
+          fi
+          echo "Waiting for Redis..."
+          sleep 1
           done
           echo "Redis did not start in time!" && exit 1
+          
+          - name: View running services
+            run: docker ps
 
       - name: View Redis logs
-        run: |
-          docker-compose logs redis
+        run: docker logs ${{ job.services.redis.name }}
 
       - name: Run tests
         env:
