@@ -73,11 +73,10 @@ jobs:
       - name: Log in Docker hub
         run: echo ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }} .
-
-      - name: Push Docker image in Docker hub
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
+      - name: Build and push Docker images using Docker Compose
+        run: |
+            docker-compose build
+            docker-compose push
 
   deploy:
     needs: build
@@ -92,8 +91,8 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
-          docker stop onlygreathabits || true
-          docker rm onlygreathabits || true
-          docker run --env-file ${{ secrets.DEPLOY_DIR }}/.env -d --name onlygreathabits -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
+          cd ${{ secrets.DEPLOY_DIR }}
+          docker-compose down
+          docker-compose pull
+          docker-compose up -d --build
           EOF
