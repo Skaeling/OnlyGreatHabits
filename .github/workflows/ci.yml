@@ -101,5 +101,5 @@ jobs:
           docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
           docker stop ogh || true
           docker rm ogh || true
-          docker run --env-file ${{ secrets.DEPLOY_DIR }}/.env -d --name habits -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
+          docker run --env-file ${{ secrets.DEPLOY_DIR }}/.env -d --name onlygreathabits -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/ogh:${{ github.sha }}
           EOF
