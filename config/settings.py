@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
-ALLOWED_HOSTS = ['158.160.90.42', 'habits', 'localhost', '0.0.0.0', ]
+ALLOWED_HOSTS = ['158.160.70.181', 'habits', 'localhost', '0.0.0.0', ]
 
 # Настройки CORS
 CORS_ALLOWED_ORIGINS = [
